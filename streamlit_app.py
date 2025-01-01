@@ -3,8 +3,8 @@ import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 from crewai import Crew
-from trip_agents import TripAgents, StreamToExpander
-from trip_tasks import TripTasks
+from sem_agents import SEMAgents, StreamToExpander
+from sem_tasks import SEMTasks
 import streamlit as st
 import datetime
 import sys
