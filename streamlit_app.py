@@ -9,8 +9,7 @@ import streamlit as st
 import datetime
 import sys
 
-st.set_page_config(page_icon="✈️", layout="wide")
-
+st.set_page_config(page_icon="📊", layout="wide")
 
 def icon(emoji: str):
     """Shows an emoji as a Notion-style page icon."""
@@ -19,120 +18,79 @@ def icon(emoji: str):
         unsafe_allow_html=True,
     )
 
+class SEMCrew:
 
-class TripCrew:
-
-    def __init__(self, origin, cities, date_range, interests):
-        self.cities = cities
-        self.origin = origin
-        self.interests = interests
-        self.date_range = date_range
+    def __init__(self, user_input, our_url, competitor_url, query_input):
+        self.user_input = user_input
+        self.our_url = our_url
+        self.competitor_url = competitor_url
+        self.query_input = query_input
         self.output_placeholder = st.empty()
 
     def run(self):
-        agents = TripAgents()
-        tasks = TripTasks()
+        agents = SEMAgents()
+        tasks = SEMTasks()
 
-        city_selector_agent = agents.city_selection_agent()
-        local_expert_agent = agents.local_expert()
-        travel_concierge_agent = agents.travel_concierge()
+        # Create agents
+        business_analyst = agents.business_analyst_agent()
+        web_analyst = agents.web_analyst_agent()
+        keyword_planner = agents.keyword_planner_agent()
+        ad_copywriter = agents.adcopy_writer_agent()
 
-        identify_task = tasks.identify_task(
-            city_selector_agent,
-            self.origin,
-            self.cities,
-            self.interests,
-            self.date_range
-        )
+        # Create tasks
+        business_analysis_task = tasks.business_analysis_task(business_analyst, self.user_input)
+        website_scraping_task = tasks.website_scraping_task(web_analyst, self.our_url, self.competitor_url, [], [])
+        keyword_planner_task = tasks.keyword_planner_task(keyword_planner, self.query_input)
+        ad_copywriter_task = tasks.ad_copywriter_task(ad_copywriter)
+        
+        full_planner_task = tasks.full_planner_task(ad_copywriter)
 
-        gather_task = tasks.gather_task(
-            local_expert_agent,
-            self.origin,
-            self.interests,
-            self.date_range
-        )
-
-        plan_task = tasks.plan_task(
-            travel_concierge_agent,
-            self.origin,
-            self.interests,
-            self.date_range
-        )
-
+        # Define Crew
         crew = Crew(
-            agents=[
-                city_selector_agent, local_expert_agent, travel_concierge_agent
-            ],
-            tasks=[identify_task, gather_task, plan_task],
+            agents=[business_analyst, web_analyst, keyword_planner, ad_copywriter],
+            tasks=[business_analysis_task, website_scraping_task, keyword_planner_task, ad_copywriter_task, full_planner_task],
             verbose=True
         )
 
+        # Run Crew
         result = crew.kickoff()
         self.output_placeholder.markdown(result)
-
         return result
 
-
 if __name__ == "__main__":
-    icon("🏖️ VacAIgent")
+    icon("📊 SEM Planner")
 
-    st.subheader("Let AI agents plan your next vacation!",
+    st.subheader("Optimize Your SEM Strategies with AI Agents!",
                  divider="rainbow", anchor=False)
 
-    import datetime
-
-    today = datetime.datetime.now().date()
-    next_year = today.year + 1
-    jan_16_next_year = datetime.date(next_year, 1, 10)
-
+    # Sidebar Configuration
     with st.sidebar:
-        st.header("👇 Enter your trip details")
-        with st.form("my_form"):
-            location = st.text_input(
-                "Where are you currently located?", placeholder="San Mateo, CA")
-            cities = st.text_input(
-                "City and country are you interested in vacationing at?", placeholder="Bali, Indonesia")
-            date_range = st.date_input(
-                "Date range you are interested in traveling?",
-                min_value=today,
-                value=(today, jan_16_next_year + datetime.timedelta(days=6)),
-                format="MM/DD/YYYY",
+        st.header("👇 Enter Details")
+        with st.form("sem_form"):
+            user_input = st.text_area(
+                "Describe your business and target audience:",
+                placeholder="Provide business overview, audience details, and product/service info."
             )
-            interests = st.text_area("High level interests and hobbies or extra details about your trip?",
-                                     placeholder="2 adults who love swimming, dancing, hiking, and eating")
+            our_url = st.text_input(
+                "Our Website URL:", placeholder="https://www.ourwebsite.com"
+            )
+            competitor_url = st.text_input(
+                "Competitor Website URL:", placeholder="https://www.competitor.com"
+            )
+            query_input = st.text_input(
+                "Keyword Query Input:", placeholder="Enter keywords or topics to analyze."
+            )
 
             submitted = st.form_submit_button("Submit")
 
-        st.divider()
+    if submitted:
+        with st.status("🤖 **Agents at work...**", state="running", expanded=True) as status:
+            with st.container(height=500, border=False):
+                sys.stdout = StreamToExpander(st)
+                sem_crew = SEMCrew(user_input, our_url, competitor_url, query_input)
+                result = sem_crew.run()
+            status.update(label="✅ SEM Plan Ready!",
+                          state="complete", expanded=False)
 
-        # Credits to joaomdmoura/CrewAI for the code: https://github.com/joaomdmoura/crewAI
-        st.sidebar.markdown(
-        """
-        Credits to [**@joaomdmoura**](https://twitter.com/joaomdmoura)
-        for creating **crewAI** 🚀
-        """,
-            unsafe_allow_html=True
-        )
-
-        st.sidebar.info("Click the logo to visit GitHub repo", icon="👇")
-        st.sidebar.markdown(
-            """
-        <a href="https://github.com/joaomdmoura/crewAI" target="_blank">
-            <img src="https://raw.githubusercontent.com/joaomdmoura/crewAI/main/docs/crewai_logo.png" alt="CrewAI Logo" style="width:100px;"/>
-        </a>
-        """,
-            unsafe_allow_html=True
-        )
-
-
-if submitted:
-    with st.status("🤖 **Agents at work...**", state="running", expanded=True) as status:
-        with st.container(height=500, border=False):
-            sys.stdout = StreamToExpander(st)
-            trip_crew = TripCrew(location, cities, date_range, interests)
-            result = trip_crew.run()
-        status.update(label="✅ Trip Plan Ready!",
-                      state="complete", expanded=False)
-
-    st.subheader("Here is your Trip Plan", anchor=False, divider="rainbow")
-    st.markdown(result)
+        st.subheader("Here is your SEM Plan", anchor=False, divider="rainbow")
+        st.markdown(result)
