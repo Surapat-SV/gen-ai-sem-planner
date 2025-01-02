@@ -20,6 +20,8 @@ epitran
 pydantic
 beautifulsoup4
 pandas
-Requests
 torch
 streamlit_option_menu
+PyYAML
+pyicu
+requests
