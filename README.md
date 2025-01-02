@@ -1,4 +1,4 @@
-# 🏖️ VacAIgent: Streamlit-Integrated AI Crew for Trip Planning
+# SEMAIgent: Streamlit-Integrated AI Crew for SEM Planning
 
 _Forked and enhanced from the_ [_crewAI examples repository_](https://github.com/joaomdmoura/crewAI-examples/tree/main/trip_planner)
 
