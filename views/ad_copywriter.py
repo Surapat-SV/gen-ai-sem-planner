@@ -53,3 +53,14 @@ def run_ad_copywriter():
 
         st.subheader("Here is your SEM Plan", anchor=False, divider="rainbow")
         st.markdown(result)
+
+    # Generate button for text ads
+    if st.button("Generate Text Ads"):
+        with st.status("✍️ **Generating Text Ads...**", state="running", expanded=True) as status:
+            ad_copywriter = SEMAgents().adcopy_writer_agent()
+            ad_copywriter_task = SEMTasks().ad_copywriter_task(ad_copywriter)
+            result = ad_copywriter_task.execute()
+            status.update(label="✅ Text Ads Ready!", state="complete", expanded=False)
+
+        st.subheader("Here are your Text Ads", anchor=False, divider="rainbow")
+        st.markdown(result)
