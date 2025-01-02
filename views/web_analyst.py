@@ -1,4 +1,13 @@
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
+from crewai import Crew
+from sem_agents import SEMAgents, StreamToExpander
+from sem_tasks import SEMTasks
 import streamlit as st
+import datetime
+import sys
 
 def run_web_analyst():
     """
