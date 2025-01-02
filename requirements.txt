@@ -25,3 +25,4 @@ streamlit_option_menu
 PyYAML
 pyicu
 requests
+Requests
