@@ -22,3 +22,4 @@ beautifulsoup4
 pandas
 Requests
 torch
+streamlit_option_menu
