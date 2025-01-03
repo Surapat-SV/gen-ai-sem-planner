@@ -8,25 +8,18 @@ import streamlit as st
 
 class SEMAgents():
 
-    def business_analyst_agent(self):
-        #"""
-        #Analyzes business inputs to define target audience and product details.
-        #"""
+    def business_analyst_agent():
         return Agent(
-            role='Lead Business Analyst',
-            goal=(
-                "Analyze business requirements to extract details about the business overview, target audience, "
-                "and product/service details. Provide strategic insights and a well-defined target audience profile."
-            ),
+            role="Business Analyst",
+            goal="Ask strategic questions to help define the target audience and gather detailed business requirements.",
             backstory=(
-                "A seasoned business analyst with expertise in evaluating business needs, identifying growth "
-                "opportunities, and defining audience segmentation strategies based on input data."
+                "You are a skilled Business Analyst with expertise in identifying target audiences and clarifying business goals. "
+                "Your primary responsibility is to gather requirements by asking targeted questions about the product or service. "
+                "You collaborate with stakeholders to ensure their needs are fully understood and documented. "
+                "Your insights serve as the foundation for planning marketing strategies and campaigns."
             ),
-            tools=[
-                SearchTools.search_internet,
-                BrowserTools.scrape_and_summarize_website,
-            ],
-            verbose=True,
+            allow_delegation=False,
+            verbose=True
         )
 
     def web_analyst_agent(self):
